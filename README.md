@@ -1,4 +1,7 @@
-# Acronymu
+# Decronymer
+
+[Decronymer.app](www.decronymer.app)
+
 A tray desktop app the helps you find the acronym meaning from the clipboard.
 
 ## How it works
