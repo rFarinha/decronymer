@@ -1,0 +1,12 @@
+{
+  "NOTE": "folderPath can be 'examples' or an absolute path. Absolute paths need to have double dash \\",
+  "folderPath": "examples",
+  "extension": "txt",
+  "separator": "-",
+  "muteNotifications": true,
+  "clipboardTimer_ms": 500,
+  "maxAcronymChars": 10,
+  "activeFiles": {
+    "SpaceX.txt": true
+  }
+}
