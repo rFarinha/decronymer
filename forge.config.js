@@ -12,7 +12,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        setupIcon: 'resources/img/icon.ico'
+        setupIcon: 'resources/img/logo.ico'
       },
     },
     {
@@ -22,7 +22,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-deb',
       config: {
-        icon: 'resources/img/icon.ico'
+        icon: 'resources/img/logo.ico'
       },
     },
     {

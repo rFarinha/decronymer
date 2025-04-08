@@ -6,6 +6,12 @@ const fs = require('fs');
 // find if Mac so the tray closes instead of quit
 const isMac = process.platform === 'darwin'
 
+// Necessary for notifications to show the correct app name
+if (process.platform === 'win32')
+  {
+      app.setAppUserModelId(app.name);
+  }
+
 const assetsPath = app.isPackaged ? path.join(process.resourcesPath) : "resources";
 
 // CONFIGURATIONS

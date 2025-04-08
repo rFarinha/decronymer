@@ -1,11 +1,10 @@
 {
   "name": "Decronymer",
   "version": "0.0.1",
-  "description": "Copy an acronym and find the meaning",
+  "description": "Copy an acronym and the meaning will popup",
   "main": "main.js",
   "scripts": {
     "test": "test.js",
-    "start": "electron-forge start",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make"
