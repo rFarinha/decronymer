@@ -4,8 +4,17 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 module.exports = {
   packagerConfig: {
     name: 'Decronymer',
+    executableName: 'Decronymer',
+    icon: 'resources/img/logo',
     extraResource: ['./resources/examples', './resources/img', './resources/settings'],
     asar: true,
+    win32metadata: {
+      CompanyName: 'YourCompany',
+      FileDescription: 'Decronymer App',
+      OriginalFilename: 'Decronymer.exe',
+      ProductName: 'Decronymer',
+      InternalName: 'Decronymer'
+    }
   },
   rebuildConfig: {},
   makers: [

@@ -24,6 +24,7 @@ let files
 let tray
 let currentClipTxt = ""
 let folderPath
+let lastNotifiedAcronym = "";
 
 // icon
 const iconPath = path.join(assetsPath, 'img', 'logo.ico')
@@ -263,8 +264,8 @@ function settingsBtnAction() {
 }
 
 function openJsonFile(jsonFile) {
-  const filePath = path.join(__dirname, jsonFile);
-  exec(`notepad ${filePath}`, (err) => {
+  //const filePath = path.join(__dirname, jsonFile);
+  exec(`notepad ${jsonFile}`, (err) => {
       if (err) {
           console.error('An error occurred while opening the JSON file:', err);
       }
@@ -309,23 +310,43 @@ function handleClipboardTextValidation(clipboardText){
     return
   }
 
+  // Check if we've already notified about this acronym recently
+  if (lastNotifiedAcronym === clipboardText) {
+    debugLog("ALREADY NOTIFIED FOR THIS ACRONYM!")
+    return
+  }
+
   currentClipTxt = clipboardText
   debugLog(currentClipTxt)
   const acronymDefinition = getDefinition(currentClipTxt)
   if(acronymDefinition){
     showNotification(clipboardText, acronymDefinition)
-    showNotification(clipboardText, acronymDefinition)
+    lastNotifiedAcronym = clipboardText
+
+    // Reset after 5 seconds (adjust time as needed)
+    setTimeout(resetLastNotifiedAcronym, 5000);
   }
 }
 
 function showNotification(notificationTitle, notificationBody) {
   if (settings != null){
-    new Notification({
+    const notification = new Notification({
       title: notificationTitle,
       body: notificationBody,
       icon: icon,
       silent: settings.muteNotifications,
-    }).show();
+      urgency: 'low',
+      timeoutType: settings.showInActionCenter ? 'default' : 'never',
+      hasReply: false,
+      closeButtonText: null,
+    });
+
+    notification.show();
+
+    // Automatically close notification after X milliseconds
+    setTimeout(() => {
+      notification.close();
+    }, settings.notificationDuration_ms || 10000);
   }
 }
 
@@ -333,6 +354,11 @@ function getDefinition(acronym) {
   const acronymDefinition = acronymMap.get(acronym)
   debugLog(acronymDefinition)
   return acronymDefinition
+}
+
+// CLEAN last used acronym
+function resetLastNotifiedAcronym() {
+  lastNotifiedAcronym = "";
 }
 
 // **********************************************************
@@ -345,4 +371,3 @@ function debugLog(message) {
     console.log(message);
   }
 }
-

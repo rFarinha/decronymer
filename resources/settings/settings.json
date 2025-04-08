@@ -4,6 +4,8 @@
   "extension": "txt",
   "separator": "-",
   "muteNotifications": true,
+  "notificationDuration_ms": 10000,
+  "showInActionCenter": false,
   "clipboardTimer_ms": 500,
   "maxAcronymChars": 10,
   "activeFiles": {
