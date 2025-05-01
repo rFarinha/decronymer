@@ -28,15 +28,25 @@ module.exports = {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
     },
+    // Debian package maker
     {
       name: '@electron-forge/maker-deb',
       config: {
-        icon: 'resources/img/logo.ico'
+        icon: 'resources/img/logo.png',
+        categories: ['Utility'],
+        depends: ['debconf'],
+        section: 'utils',
+        priority: 'optional',
+        homepage: 'https://www.decronymer.app',
       },
     },
+    // RPM package maker
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        icon: 'resources/img/logo.png',
+        categories: ['Utility'],
+      },
     },
   ],
   plugins: [
