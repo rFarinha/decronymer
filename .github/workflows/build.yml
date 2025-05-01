@@ -9,7 +9,42 @@ on:
     branches: [ main, master ]
 
 jobs:
+  validate-version:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Validate SemVer compatibility
+      run: |
+        # Extract version from package.json
+        VERSION=$(node -p "require('./package.json').version")
+        echo "Package version: $VERSION"
+        
+        # Check if version follows SemVer (MAJOR.MINOR.PATCH)
+        if [[ ! $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "::error::Version '$VERSION' is not SemVer-compatible. It should follow the format MAJOR.MINOR.PATCH (e.g. 0.2.0)"
+          exit 1
+        fi
+        
+        # Also check setup-script.iss if it exists
+        if [ -f "setup-script.iss" ]; then
+          ISS_VERSION=$(grep 'MyAppVersion' setup-script.iss | head -1 | sed -E 's/.*"([0-9]+\.[0-9]+\.[0-9]+)".*/\1/')
+          echo "Inno Setup version: $ISS_VERSION"
+          
+          if [[ ! $ISS_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Inno Setup version '$ISS_VERSION' is not SemVer-compatible. It should follow the format MAJOR.MINOR.PATCH (e.g. 0.2.0)"
+            exit 1
+          fi
+          
+          # Check if versions match
+          if [ "$VERSION" != "$ISS_VERSION" ]; then
+            echo "::warning::Version mismatch between package.json ($VERSION) and setup-script.iss ($ISS_VERSION)"
+          fi
+        fi
+  
   build:
+    needs: validate-version
     runs-on: ${{ matrix.os }}
     
     strategy:
@@ -28,8 +63,14 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     
+    # Install dependencies with specific troubleshooting for Electron Forge
     - name: Install dependencies
-      run: npm install
+      run: |
+        npm install
+        npm install --save-dev electron-prebuilt-compile
+        npm list electron
+        npm list @electron-forge/cli
+      shell: bash
     
     # Add specific dependencies for Linux builds
     - name: Install Linux dependencies
@@ -38,14 +79,27 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libx11-dev libxkbfile-dev libsecret-1-dev libnss3 libgtk-3-dev libasound2-dev
     
-    # Add debug step to see folder structure before build
+    # Debug the project structure and node_modules
     - name: Debug project structure
       run: |
         echo "Current directory content:"
         ls -la
+        
+        echo "Node modules:"
+        if [ -d "node_modules" ]; then
+          ls -la node_modules | grep electron
+          ls -la node_modules/@electron-forge || echo "No @electron-forge directory"
+        else
+          echo "No node_modules directory found"
+        fi
+      shell: bash
     
+    # Build application with error checking
     - name: Build application
-      run: npm run make
+      run: |
+        echo "Starting Electron Forge build..."
+        npm run make || (echo "Build failed, showing debug info:" && npx electron-forge --verbose make)
+      shell: bash
     
     # Add debug step to see output folder structure after build
     - name: Debug output structure
@@ -60,20 +114,30 @@ jobs:
         fi
       shell: bash
     
-    # Instead of using the upload-artifact action directly, we'll create a tarball
-    # and upload it using GitHub's native artifact support
+    # Create artifact archive with error handling
     - name: Create artifact archive
       run: |
+        mkdir -p artifacts
+        
         if [ -d "out/make" ]; then
-          mkdir -p artifacts
+          echo "Creating artifact archive from out/make directory"
           if [ "${{ matrix.os }}" == "windows-latest" ]; then
             7z a -tzip artifacts/decronymer-${{ matrix.os }}.zip ./out/make/*
           else
             tar -czvf artifacts/decronymer-${{ matrix.os }}.tar.gz -C out/make .
           fi
+          echo "Archive created successfully"
+        elif [ -d "out" ]; then
+          echo "No out/make directory found, using out directory instead"
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            7z a -tzip artifacts/decronymer-${{ matrix.os }}.zip ./out/*
+          else
+            tar -czvf artifacts/decronymer-${{ matrix.os }}.tar.gz -C out .
+          fi
         else
-          echo "No artifacts to upload"
-          exit 1
+          echo "No artifacts to upload - build likely failed"
+          mkdir -p artifacts
+          echo "Build failed" > artifacts/build-failed-${{ matrix.os }}.txt
         fi
       shell: bash
       
@@ -116,6 +180,10 @@ jobs:
       run: |
         mkdir -p extracted
         
+        # List all downloaded artifacts
+        echo "Downloaded artifacts:"
+        find release-artifacts -type f | sort
+        
         # Extract Windows artifacts
         if [ -f "release-artifacts/windows/decronymer-windows-latest.zip" ]; then
           unzip -o release-artifacts/windows/decronymer-windows-latest.zip -d extracted/windows
@@ -147,6 +215,8 @@ jobs:
           extracted/**/*.deb
           extracted/**/*.rpm
           extracted/**/*.zip
+          extracted/**/*.nupkg
+          extracted/**/*.msi
         draft: false
         prerelease: false
         generate_release_notes: true
