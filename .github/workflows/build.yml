@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, master ]
     tags:
-      - 'v*'  # Push events to tags matching v*, e.g., v1.0
+      - 'v*'  # Push events to tags matching v*, e.g., v1.0, v20.15.10
   pull_request:
     branches: [ main, master ]
 
@@ -16,6 +16,8 @@ jobs:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
         node-version: [18.x]
+      # Don't fail the entire workflow if one OS build fails
+      fail-fast: false
     
     steps:
     - uses: actions/checkout@v3
@@ -27,21 +29,43 @@ jobs:
         cache: 'npm'
     
     - name: Install dependencies
-      run: npm ci
+      run: npm install
+    
+    # Add specific dependencies for Linux builds
+    - name: Install Linux dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libx11-dev libxkbfile-dev libsecret-1-dev libnss3 libgtk-3-dev libasound2-dev
+    
+    # Add debug step to see folder structure before build
+    - name: Debug project structure
+      run: |
+        echo "Current directory content:"
+        ls -la
     
     - name: Build application
       run: npm run make
+    
+    # Add debug step to see output folder structure after build
+    - name: Debug output structure
+      run: |
+        echo "Output directory content:"
+        ls -la out || echo "No out directory found"
+        if [ -d "out/make" ]; then
+          echo "Make directory content:"
+          find out/make -type f | sort
+        else
+          echo "No out/make directory found"
+        fi
+      shell: bash
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
         name: decronymer-${{ matrix.os }}
-        path: |
-          out/make/**/*.exe
-          out/make/**/*.dmg
-          out/make/**/*.deb
-          out/make/**/*.rpm
-          out/make/**/*.zip
+        path: out/make
+        if-no-files-found: warn
     
   release:
     needs: build
@@ -51,6 +75,12 @@ jobs:
     steps:
     - name: Download all artifacts
       uses: actions/download-artifact@v3
+    
+    - name: List downloaded artifacts
+      run: |
+        echo "Downloaded artifacts:"
+        find . -type f | sort
+      shell: bash
     
     - name: Create Release
       id: create_release
