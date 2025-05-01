@@ -20,13 +20,13 @@ jobs:
       fail-fast: false
     
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
     
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
     
     - name: Install dependencies
       run: npm install
@@ -60,11 +60,29 @@ jobs:
         fi
       shell: bash
     
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+    # Instead of using the upload-artifact action directly, we'll create a tarball
+    # and upload it using GitHub's native artifact support
+    - name: Create artifact archive
+      run: |
+        if [ -d "out/make" ]; then
+          mkdir -p artifacts
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            7z a -tzip artifacts/decronymer-${{ matrix.os }}.zip ./out/make/*
+          else
+            tar -czvf artifacts/decronymer-${{ matrix.os }}.tar.gz -C out/make .
+          fi
+        else
+          echo "No artifacts to upload"
+          exit 1
+        fi
+      shell: bash
+      
+    # Use a more basic method to upload artifacts
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
       with:
         name: decronymer-${{ matrix.os }}
-        path: out/make
+        path: artifacts/
         if-no-files-found: warn
     
   release:
@@ -73,20 +91,62 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
     
-    - name: List downloaded artifacts
+    - name: Download Windows artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: decronymer-windows-latest
+        path: release-artifacts/windows
+    
+    - name: Download macOS artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: decronymer-macos-latest
+        path: release-artifacts/macos
+    
+    - name: Download Linux artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: decronymer-ubuntu-latest
+        path: release-artifacts/linux
+    
+    - name: Extract artifacts
       run: |
-        echo "Downloaded artifacts:"
-        find . -type f | sort
+        mkdir -p extracted
+        
+        # Extract Windows artifacts
+        if [ -f "release-artifacts/windows/decronymer-windows-latest.zip" ]; then
+          unzip -o release-artifacts/windows/decronymer-windows-latest.zip -d extracted/windows
+        fi
+        
+        # Extract macOS artifacts
+        if [ -f "release-artifacts/macos/decronymer-macos-latest.tar.gz" ]; then
+          mkdir -p extracted/macos
+          tar -xzvf release-artifacts/macos/decronymer-macos-latest.tar.gz -C extracted/macos
+        fi
+        
+        # Extract Linux artifacts
+        if [ -f "release-artifacts/linux/decronymer-ubuntu-latest.tar.gz" ]; then
+          mkdir -p extracted/linux
+          tar -xzvf release-artifacts/linux/decronymer-ubuntu-latest.tar.gz -C extracted/linux
+        fi
+        
+        # List all extracted files
+        echo "Extracted files:"
+        find extracted -type f | sort
       shell: bash
     
     - name: Create Release
-      id: create_release
       uses: softprops/action-gh-release@v1
       with:
-        files: ./**/*
+        files: |
+          extracted/**/*.exe
+          extracted/**/*.dmg
+          extracted/**/*.deb
+          extracted/**/*.rpm
+          extracted/**/*.zip
         draft: false
         prerelease: false
         generate_release_notes: true
