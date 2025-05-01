@@ -63,11 +63,18 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     
-    # Install dependencies with specific troubleshooting for Electron Forge
+    # Install dependencies with platform-specific flags
     - name: Install dependencies
       run: |
-        npm install
-        npm install --save-dev electron-prebuilt-compile
+        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          # For macOS, don't install electron-prebuilt-compile which has ARM64 issues
+          npm install
+          echo "Skipping electron-prebuilt-compile for macOS"
+        else
+          npm install
+        fi
+        
+        # Check installed packages
         npm list electron
         npm list @electron-forge/cli
       shell: bash
@@ -92,6 +99,20 @@ jobs:
         else
           echo "No node_modules directory found"
         fi
+      shell: bash
+    
+    # Special handling for macOS build
+    - name: Set macOS Electron config
+      if: matrix.os == 'macos-latest'
+      run: |
+        # Set environment variables to help with ARM64 compatibility
+        echo "Setting Electron build configuration for macOS"
+        echo "ELECTRON_SKIP_BINARY_DOWNLOAD=1" >> $GITHUB_ENV
+        echo "npm_config_arch=x64" >> $GITHUB_ENV
+        echo "npm_config_target_arch=x64" >> $GITHUB_ENV
+        
+        # Force x64 architecture for Electron
+        echo '{"arch": "x64", "target_arch": "x64"}' > .npmrc
       shell: bash
     
     # Build application with error checking
