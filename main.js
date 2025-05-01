@@ -369,13 +369,18 @@ function saveSelectedFilesToFile(selectedFiles) {
   }
 }
 
+// **********************************************************
+// TRAY BUTTONS
+// **********************************************************
+
+// Function to handle the click event of the refresh button
 function refreshBtnAction() {
   debugLog('Refresh pressed!')
   refreshData()
   updateTrayMenu()
 }
 
-
+// Function to handle the click event of the settings button
 function settingsBtnAction() {
   debugLog('Settings pressed!')
   openJsonFile(settingsFileName)
@@ -429,6 +434,8 @@ function readClipboardAndPerformActions() {
   handleClipboardTextValidation(clipboardText)
 }
 
+// Function to handle clipboard text validation
+// @param {string} clipboardText - The text from the clipboard
 function handleClipboardTextValidation(clipboardText){
   
   // Check if string

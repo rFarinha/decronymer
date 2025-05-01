@@ -1,6 +1,6 @@
 {
   "name": "Decronymer",
-  "version": "0.1",
+  "version": "0.2",
   "description": "Copy an acronym and the meaning will popup",
   "main": "main.js",
   "scripts": {
