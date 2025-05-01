@@ -2,7 +2,7 @@
 ; Author: Claude
 
 #define MyAppName "Decronymer"
-#define MyAppVersion "0.1"
+#define MyAppVersion "0.2.0"
 #define MyAppPublisher "Decronymer"
 #define MyAppURL "https://www.decronymer.app"
 #define MyAppExeName "Decronymer.exe"
