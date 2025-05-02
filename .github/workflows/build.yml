@@ -32,12 +32,6 @@ jobs:
           ISS_VERSION=$(grep 'MyAppVersion' setup-script.iss | head -1 | sed -E 's/.*"([0-9]+\.[0-9]+\.[0-9]+)".*/\1/')
           echo "Inno Setup version: $ISS_VERSION"
           
-          if [[ ! $ISS_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Inno Setup version '$ISS_VERSION' is not SemVer-compatible. It should follow the format MAJOR.MINOR.PATCH (e.g. 0.2.0)"
-            exit 1
-          fi
-          
-          # Check if versions match
           if [ "$VERSION" != "$ISS_VERSION" ]; then
             echo "::warning::Version mismatch between package.json ($VERSION) and setup-script.iss ($ISS_VERSION)"
           fi
@@ -51,7 +45,6 @@ jobs:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
         node-version: [18.x]
-      # Don't fail the entire workflow if one OS build fails
       fail-fast: false
     
     steps:
@@ -63,22 +56,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     
-    # Install dependencies with platform-specific flags
+    # Install dependencies with platform-specific settings
     - name: Install dependencies
-      run: |
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          # For macOS, don't install electron-prebuilt-compile which has ARM64 issues
-          npm install
-          echo "Skipping electron-prebuilt-compile for macOS"
-        else
-          npm install
-        fi
-        
-        # Check installed packages
-        npm list electron
-        npm list @electron-forge/cli
-      shell: bash
-    
+      run: npm install
+      
     # Add specific dependencies for Linux builds
     - name: Install Linux dependencies
       if: matrix.os == 'ubuntu-latest'
@@ -86,70 +67,30 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libx11-dev libxkbfile-dev libsecret-1-dev libnss3 libgtk-3-dev libasound2-dev
     
-    # Debug the project structure and node_modules
-    - name: Debug project structure
-      run: |
-        echo "Current directory content:"
-        ls -la
-        
-        echo "Node modules:"
-        if [ -d "node_modules" ]; then
-          ls -la node_modules | grep electron
-          ls -la node_modules/@electron-forge || echo "No @electron-forge directory"
-        else
-          echo "No node_modules directory found"
-        fi
-      shell: bash
-    
     # Special handling for macOS build
     - name: Set macOS Electron config
       if: matrix.os == 'macos-latest'
       run: |
         # Set environment variables to help with ARM64 compatibility
-        echo "Setting Electron build configuration for macOS"
-        echo "ELECTRON_SKIP_BINARY_DOWNLOAD=1" >> $GITHUB_ENV
         echo "npm_config_arch=x64" >> $GITHUB_ENV
         echo "npm_config_target_arch=x64" >> $GITHUB_ENV
-        
-        # Force x64 architecture for Electron
-        echo '{"arch": "x64", "target_arch": "x64"}' > .npmrc
-      shell: bash
     
-    # Build application with error checking
+    # Build application
     - name: Build application
-      run: |
-        echo "Starting Electron Forge build..."
-        npm run make || (echo "Build failed, showing debug info:" && npx electron-forge --verbose make)
-      shell: bash
+      run: npm run make
     
-    # Add debug step to see output folder structure after build
-    - name: Debug output structure
-      run: |
-        echo "Output directory content:"
-        ls -la out || echo "No out directory found"
-        if [ -d "out/make" ]; then
-          echo "Make directory content:"
-          find out/make -type f | sort
-        else
-          echo "No out/make directory found"
-        fi
-      shell: bash
-    
-    # Create artifact archive with error handling
+    # Create artifact archive
     - name: Create artifact archive
       run: |
         mkdir -p artifacts
         
         if [ -d "out/make" ]; then
-          echo "Creating artifact archive from out/make directory"
           if [ "${{ matrix.os }}" == "windows-latest" ]; then
             7z a -tzip artifacts/decronymer-${{ matrix.os }}.zip ./out/make/*
           else
             tar -czvf artifacts/decronymer-${{ matrix.os }}.tar.gz -C out/make .
           fi
-          echo "Archive created successfully"
         elif [ -d "out" ]; then
-          echo "No out/make directory found, using out directory instead"
           if [ "${{ matrix.os }}" == "windows-latest" ]; then
             7z a -tzip artifacts/decronymer-${{ matrix.os }}.zip ./out/*
           else
@@ -162,7 +103,7 @@ jobs:
         fi
       shell: bash
       
-    # Use v4 for upload-artifact
+    # Upload artifacts
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -172,13 +113,10 @@ jobs:
     
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/RELEASE/v')
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
     - name: Download Windows artifacts
       uses: actions/download-artifact@v4
       with:
@@ -201,10 +139,6 @@ jobs:
       run: |
         mkdir -p extracted
         
-        # List all downloaded artifacts
-        echo "Downloaded artifacts:"
-        find release-artifacts -type f | sort
-        
         # Extract Windows artifacts
         if [ -f "release-artifacts/windows/decronymer-windows-latest.zip" ]; then
           unzip -o release-artifacts/windows/decronymer-windows-latest.zip -d extracted/windows
@@ -221,12 +155,8 @@ jobs:
           mkdir -p extracted/linux
           tar -xzvf release-artifacts/linux/decronymer-ubuntu-latest.tar.gz -C extracted/linux
         fi
-        
-        # List all extracted files
-        echo "Extracted files:"
-        find extracted -type f | sort
-      shell: bash
-    
+      
+    # Create GitHub Release
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
