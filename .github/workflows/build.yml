@@ -67,18 +67,27 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libx11-dev libxkbfile-dev libsecret-1-dev libnss3 libgtk-3-dev libasound2-dev
     
-      # Build application for universal on macOS
-    - name: Build application
+    # Build application with separate architecture handling for macOS
+    - name: Build application (macOS)
+      if: matrix.os == 'macos-latest'
       run: |
-        if [ "${{ matrix.os }}" == "macos-latest" ]; then
-          npm run make -- --arch=universal
-        else
-          npm run make
-        fi
+        # Build for x64
+        npm run make -- --arch=x64
+        mv out out-x64
+        
+        # Build for arm64
+        npm run make -- --arch=arm64
+        mv out out-arm64
+        
+        # Create a combined out directory
+        mkdir -p out/make
+        cp -R out-x64/make/* out/make/ 2>/dev/null || true
+        cp -R out-arm64/make/* out/make/ 2>/dev/null || true
       shell: bash
     
-    # Build application
-    - name: Build application
+    # Build application (Windows and Linux)
+    - name: Build application (Windows/Linux)
+      if: matrix.os != 'macos-latest'
       run: npm run make
     
     # Create artifact archive

@@ -14,14 +14,7 @@ module.exports = {
       OriginalFilename: 'Decronymer.exe',
       ProductName: 'Decronymer',
       InternalName: 'Decronymer'
-    },
-    osxUniversal: {
-      x64ArchFiles: '*',
-      arm64ArchFiles: '*',
-      mergeASARs: true,
-      singleArchFiles: '*'
-    },
-    arch: process.platform === 'darwin' ? 'universal' : undefined
+    }
   },
   rebuildConfig: {},
   makers: [
