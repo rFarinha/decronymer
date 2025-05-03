@@ -1,20 +1,145 @@
 # Decronymer
 
-[Decronymer.app](https://www.decronymer.app/)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fwww.decronymer.app%2F&up_message=online&down_message=offline&style=for-the-badge&logo=internet-explorer&label=Website)](https://www.decronymer.app/)
+[![GitHub License](https://img.shields.io/github/license/rFarinha/Decronymer?style=for-the-badge&logo=github)](./LICENSE.txt)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/rFarinha/Decronymer?style=for-the-badge&logo=github)](https://github.com/rFarinha/Decronymer/releases)
 
-A tray desktop app the helps you find the acronym meaning from the clipboard.
-
-## How it works
-
-1. Copy an acronym to clipboard
-2. App will read clipboard and search the meaning in a TXT file with all your acronyms
-2. If App finds the acronym, a notification will appear with the meaning
-
-## Features
-1. Create multiple lists and change between them easily
-2. Possible to choose a google drive folder to connect an acronym list with multiple team members
-
-## Install
+A lightweight desktop tray application that automatically detects acronyms from your clipboard and displays their meanings via system notifications.
 
 
-## Contribute
+
+## 🚀 Features
+
+- **Automatic Clipboard Monitoring**: Continuously monitors your clipboard for copied text
+- **Instant Notifications**: Shows system notifications with acronym meanings
+- **Multiple File Support**: Organize acronyms across different files (TXT, CSV, MD)
+- **Team Collaboration**: Optionally sync acronym lists through Google Drive for team sharing
+- **Customizable Settings**: Configure notification duration, mute options, and more
+- **Cross-Platform**: Works on Windows, macOS, and Linux
+- **Lightweight**: Runs quietly in the system tray
+- **File Type Support**: Works with `.txt`, `.csv`, and `.md` files
+
+## 📋 How It Works
+
+### Finding an acronym
+1. Copy any text containing an acronym to your clipboard
+2. Decronymer automatically detects if the text matches any acronym in your lists
+3. If a match is found, a system notification appears with the meaning
+4. The notification disappears after the configured duration
+
+### Adding an acronym
+1. Add an acronym to the acronym file
+2. Press Tray Icon
+3. Press Refresh to update Decronymer database
+
+### Changing to text file in another folder
+1. Go to tray and open settings
+2. Change path to folder with acronym text files
+3. Press Refresh to update list of text files available
+
+## 💻 Installation
+
+### Method 1: Download Pre-built Binaries
+
+1. Visit the [Releases](https://github.com/rFarinha/Decronymer/releases) page
+2. Download the appropriate installer for your operating system:
+   - **Windows**: `decronymer-setup.exe`
+   - **macOS**: `Decronymer-x.x.x.dmg`
+   - **Linux**: `decronymer_x.x.x_amd64.deb` or `.rpm`
+3. Run the installer and follow the installation wizard
+
+### Method 2: Build from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/rFarinha/Decronymer.git
+cd Decronymer
+
+# Install dependencies
+npm install
+
+# Run in development mode
+npm start
+
+# Build for production
+npm run make
+```
+
+## ⚙️ Configuration
+
+Decronymer uses a `settings.json` file for configuration. To open the settings:
+
+1. Press Tray Icon
+2. Press Settings (it will open with the default software for JSONs in the OS)
+
+The default settings are:
+
+```json
+{
+  "folderPath": "examples",
+  "extensions": ["txt", "csv", "md"],
+  "separator": ";",
+  "muteNotifications": true,
+  "notificationDuration_ms": 10000,
+  "showInActionCenter": false,
+  "clipboardTimer_ms": 500,
+  "maxAcronymChars": 15,
+  "urgency": "normal",
+  "activeFiles": {
+    "SpaceX.txt": true
+  }
+}
+```
+>⚠️ If an invalid settings are saved, Decronymer will reset the settings to default!
+
+### Configuration Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `folderPath` | Directory containing acronym files. Use an absolute path. | `"examples"` |
+| `extensions` | Supported file extensions list | `["txt", "csv", "md"]` |
+| `separator` | Character separating acronym from definition | `";"` |
+| `muteNotifications` | Whether notifications should be silent | `true` |
+| `notificationDuration_ms` | How long notifications stay visible (ms) | `10000` |
+| `showInActionCenter` | Keep notifications in system notification center | `false` |
+| `clipboardTimer_ms` | How often to check clipboard (ms) | `500` |
+| `maxAcronymChars` | Maximum characters to consider as acronym | `15` |
+| `urgency` | Notification priority level (normal, critical, low) | `"normal"` |
+| `activeFiles` | Which files are currently active | `{ "SpaceX.txt": true }` |
+
+## 🤝 Contributing
+
+Contributions are welcomed! Here's how you can help:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+
+### Development Setup
+
+```bash
+# Clone your fork
+git clone https://github.com/your-username/Decronymer.git
+cd Decronymer
+
+# Install dependencies
+npm install
+
+# Start development server
+npm start
+
+# Run in debug mode
+# Set debugMode = true in main.js
+```
+
+## 🐛 Issues
+
+Found a bug or have a feature request? Please [open an issue](https://github.com/rFarinha/Decronymer/issues/new) with:
+
+- Clear description of the problem/request
+- Steps to reproduce (for bugs)
+- Expected vs actual behavior
+- Your operating system and Decronymer version
