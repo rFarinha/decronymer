@@ -27,11 +27,12 @@ module.exports = {
     {
       name: '@electron-forge/maker-dmg',
       config: {
-        format: 'ULFO', 
+        format: 'ULFO',
         icon: 'resources/img/logo.icns',
-        name: (arch) => `Decronymer-${arch}`,
+        name: 'Decronymer',
         overwrite: true
       }
+    },
     },
     // Debian package maker
     {
