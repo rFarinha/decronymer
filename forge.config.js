@@ -33,7 +33,6 @@ module.exports = {
         overwrite: true
       }
     },
-    },
     // Debian package maker
     {
       name: '@electron-forge/maker-deb',
