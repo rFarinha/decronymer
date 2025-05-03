@@ -1,7 +1,7 @@
 {
   "name": "Decronymer",
   "version": "0.2.0",
-  "description": "Copy an acronym and the meaning will popup",
+  "description": "A lightweight desktop tray application that automatically detects acronyms from your clipboard and displays their meanings via system notifications.",
   "main": "main.js",
   "scripts": {
     "test": "test.js",
