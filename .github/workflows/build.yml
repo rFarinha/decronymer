@@ -56,6 +56,16 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     
+    # Install Inno Setup on Windows
+    - name: Install Inno Setup
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install innosetup -y
+        # Add Inno Setup to PATH for the current job
+        echo "C:\Program Files (x86)\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      shell: powershell
+
+
     # Install dependencies with platform-specific settings
     - name: Install dependencies
       run: npm install
@@ -181,6 +191,7 @@ jobs:
           extracted/**/*.zip
           extracted/**/*.nupkg
           extracted/**/*.msi
+          extracted/**/Decronymer-Inno-Setup.exe
         draft: false
         prerelease: false
         generate_release_notes: true
