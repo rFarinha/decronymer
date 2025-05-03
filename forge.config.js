@@ -9,12 +9,19 @@ module.exports = {
     extraResource: ['./resources/examples', './resources/img', './resources/settings'],
     asar: true,
     win32metadata: {
-      CompanyName: 'YourCompany',
+      CompanyName: 'Decronymer',
       FileDescription: 'Decronymer App',
       OriginalFilename: 'Decronymer.exe',
       ProductName: 'Decronymer',
       InternalName: 'Decronymer'
-    }
+    },
+    osxUniversal: {
+      x64ArchFiles: '*',
+      arm64ArchFiles: '*',
+      mergeASARs: true,
+      singleArchFiles: '*'
+    },
+    arch: process.platform === 'darwin' ? 'universal' : undefined
   },
   rebuildConfig: {},
   makers: [
@@ -25,8 +32,13 @@ module.exports = {
       },
     },
     {
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
+      name: '@electron-forge/maker-dmg',
+      config: {
+        format: 'ULFO', 
+        icon: 'resources/img/logo.icns',
+        name: 'Decronymer',
+        overwrite: true
+      }
     },
     // Debian package maker
     {

@@ -67,13 +67,15 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libx11-dev libxkbfile-dev libsecret-1-dev libnss3 libgtk-3-dev libasound2-dev
     
-    # Special handling for macOS build
-    - name: Set macOS Electron config
-      if: matrix.os == 'macos-latest'
+      # Build application for universal on macOS
+    - name: Build application
       run: |
-        # Set environment variables to help with ARM64 compatibility
-        echo "npm_config_arch=x64" >> $GITHUB_ENV
-        echo "npm_config_target_arch=x64" >> $GITHUB_ENV
+        if [ "${{ matrix.os }}" == "macos-latest" ]; then
+          npm run make -- --arch=universal
+        else
+          npm run make
+        fi
+      shell: bash
     
     # Build application
     - name: Build application

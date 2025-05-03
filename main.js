@@ -28,7 +28,8 @@ let lastNotifiedAcronym = "";
 
 // icon
 const iconPath = path.join(assetsPath, 'img', 
-  process.platform === 'win32' ? 'logo.ico' : 'logo.png')
+  process.platform === 'win32' ? 'logo.ico' : 
+  process.platform === 'darwin' ? 'logo.icns' : 'logo.png')
 const icon = nativeImage.createFromPath(iconPath)
 
 
