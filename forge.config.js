@@ -24,12 +24,27 @@ module.exports = {
         setupIcon: 'resources/img/logo.ico'
       },
     },
+    // DMG maker for Intel Macs
     {
       name: '@electron-forge/maker-dmg',
+      platforms: ['darwin'],
+      architectures: ['x64'],
       config: {
         format: 'ULFO',
         icon: 'resources/img/logo.icns',
-        name: 'Decronymer',
+        name: 'Decronymer-x64',
+        overwrite: true
+      }
+    },
+    // DMG maker for Apple Silicon Macs
+    {
+      name: '@electron-forge/maker-dmg',
+      platforms: ['darwin'],
+      architectures: ['arm64'],
+      config: {
+        format: 'ULFO',
+        icon: 'resources/img/logo.icns',
+        name: 'Decronymer-arm64',
         overwrite: true
       }
     },

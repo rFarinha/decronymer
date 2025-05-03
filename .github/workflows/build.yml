@@ -75,7 +75,7 @@ jobs:
         npm run make -- --arch=x64
         mv out out-x64
         
-        # Build for arm64
+        # Build for arm64  
         npm run make -- --arch=arm64
         mv out out-arm64
         
@@ -83,6 +83,10 @@ jobs:
         mkdir -p out/make
         cp -R out-x64/make/* out/make/ 2>/dev/null || true
         cp -R out-arm64/make/* out/make/ 2>/dev/null || true
+        
+        # List the output files for debugging
+        echo "Files in out/make:"
+        ls -la out/make/
       shell: bash
     
     # Build application (Windows and Linux)
