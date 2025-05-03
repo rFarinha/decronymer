@@ -29,7 +29,7 @@ module.exports = {
       config: {
         format: 'ULFO', 
         icon: 'resources/img/logo.icns',
-        name: 'Decronymer',
+        name: (arch) => `Decronymer-${arch}`,
         overwrite: true
       }
     },
