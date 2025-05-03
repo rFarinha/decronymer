@@ -115,6 +115,8 @@ jobs:
     needs: build
     if: startsWith(github.ref, 'refs/tags/RELEASE/v')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
     - name: Download Windows artifacts
