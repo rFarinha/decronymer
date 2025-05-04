@@ -178,13 +178,13 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          extracted/**/*.exe
-          extracted/**/*.dmg
           extracted/**/*.deb
           extracted/**/*.rpm
           extracted/**/*.zip
-          extracted/**/*.nupkg
-          extracted/**/*.msi
+        # extracted/**/*.exe
+        # extracted/**/*.msi
+        # extracted/**/*.nupkg
+        # extracted/**/*.dmg
         draft: false
         prerelease: false
         generate_release_notes: true

@@ -1,8 +1,11 @@
-; Script generated for Decronymer with Discord-like installer experience
-; Author: Claude
+; Author: rFarinha
+
+#define GetAppVersion() \
+  Local[0] = GetFileVersion(AddBackslash(SourcePath) + "out\Decronymer-win32-x64\Decronymer.exe"), \
+  Local[0]
 
 #define MyAppName "Decronymer"
-#define MyAppVersion "0.2.0"
+#define MyAppVersion GetAppVersion()
 #define MyAppPublisher "Decronymer"
 #define MyAppURL "https://www.decronymer.app"
 #define MyAppExeName "Decronymer.exe"

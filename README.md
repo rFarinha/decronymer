@@ -7,7 +7,6 @@
 A lightweight desktop tray application that automatically detects acronyms from your clipboard and displays their meanings via system notifications.
 
 
-
 ## 🚀 Features
 
 - **Automatic Clipboard Monitoring**: Continuously monitors your clipboard for copied text
@@ -44,11 +43,12 @@ A lightweight desktop tray application that automatically detects acronyms from 
 1. Visit the [Releases](https://github.com/rFarinha/Decronymer/releases) page
 2. Download the appropriate installer for your operating system:
    - **Windows**: `decronymer-setup.exe`
-   - **macOS**: `Decronymer-x.x.x.dmg`
    - **Linux**: `decronymer_x.x.x_amd64.deb` or `.rpm`
 3. Run the installer and follow the installation wizard
 
 ### Method 2: Build from Source
+
+⚠️ For **macOS** you need to build from source.
 
 ```bash
 # Clone the repository

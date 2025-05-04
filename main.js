@@ -1,4 +1,4 @@
-const { app, Menu, Tray, nativeImage, BrowserWindow, clipboard, Notification } = require('electron')
+const { app, Menu, Tray, nativeImage, BrowserWindow, clipboard, Notification, shell } = require('electron')
 const { exec } = require('child_process'); // To open notepad when settings in tray is selected
 const path = require('path')
 const fs = require('fs');
@@ -278,7 +278,7 @@ function updateActiveFiles(fileList) {
 function buildTray(){
   tray = new Tray(icon)
   const menu = buildMenu(files, settings.activeFiles)
-  tray.setToolTip('Decronymer')
+  tray.setToolTip('Decronymer v' + app.getVersion())
   tray.setContextMenu(menu)
 }
 
@@ -290,7 +290,12 @@ function updateTrayMenu() {
 
 function buildMenu(files, selectedFiles){
   const menu = Menu.buildFromTemplate([
-    { label: app.name, enabled: false },
+    { 
+      label: `${app.name} v${app.getVersion()}`,
+      click: () => {
+        shell.openExternal('http://decronymer.app')
+      },
+    },
     { type: 'separator' },
     {
       label: 'Active Texts',
