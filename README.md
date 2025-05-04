@@ -6,6 +6,7 @@
 
 A lightweight desktop tray application that automatically detects acronyms from your clipboard and displays their meanings via system notifications.
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M71EIAS9)
 
 ## 🚀 Features
 
