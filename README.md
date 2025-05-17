@@ -8,33 +8,55 @@ A lightweight desktop tray application that automatically detects acronyms from 
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M71EIAS9)
 
+![image](https://github.com/user-attachments/assets/5b2aa782-2014-4dc3-9095-eea449edec46)
+
 ## 🚀 Features
 
-- **Automatic Clipboard Monitoring**: Continuously monitors your clipboard for copied text
-- **Instant Notifications**: Shows system notifications with acronym meanings
+- **Notifications**: Shows system notifications with acronym meanings
 - **Multiple File Support**: Organize acronyms across different files (TXT, CSV, MD)
+- **Multiple Files Active**: Select multiple files to search all at the same time
 - **Team Collaboration**: Optionally sync acronym lists through Google Drive for team sharing
 - **Customizable Settings**: Configure notification duration, mute options, and more
-- **Cross-Platform**: Works on Windows, macOS, and Linux
-- **Lightweight**: Runs quietly in the system tray
-- **File Type Support**: Works with `.txt`, `.csv`, and `.md` files
+- **Cross-Platform**: Works on Windows and Linux, dont have mac to test on macOS
 
 ## 📋 How It Works
+
+https://github.com/user-attachments/assets/2036b604-1f2e-4eb3-99da-af6507887a98
+
+1. [Finding an acronym](#finding-an-acronym)
+2. [Adding an acronym](#adding-an-acronym)
+3. [Selecting Multiple files same folder](#selecting-multiple-files-same-folder)
+4. [Changing to text file in another folder](#changing-to-text-file-in-another-folder)
 
 ### Finding an acronym
 1. Copy any text containing an acronym to your clipboard
 2. Decronymer automatically detects if the text matches any acronym in your lists
 3. If a match is found, a system notification appears with the meaning
 4. The notification disappears after the configured duration
+⚠️ Copying twice the same acronym will not pop up the notification, just copy something random and try again
 
 ### Adding an acronym
 1. Add an acronym to the acronym file
 2. Press Tray Icon
 3. Press Refresh to update Decronymer database
 
+![image](https://github.com/user-attachments/assets/b41728e5-230d-4d05-bf76-9b0a73030b52)
+
+### Selecting Multiple files same folder
+1. Go to tray and open Active Texts
+2. Press to the left of the txt name
+   
+![image](https://github.com/user-attachments/assets/fa41ef44-75eb-4a6e-ada8-8d4b992997d4)
+
 ### Changing to text file in another folder
 1. Go to tray and open settings
-2. Change path to folder with acronym text files
+   
+![image](https://github.com/user-attachments/assets/fb95b3a1-874d-435a-876a-813ca7227a7c)
+
+2. Change path to folder with acronym text files (use double \\\\ for windows)
+
+![image](https://github.com/user-attachments/assets/dec9ed47-281a-4fa5-b3b3-f2425cf38908)
+
 3. Press Refresh to update list of text files available
 
 ## 💻 Installation
@@ -97,7 +119,7 @@ The default settings are:
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `folderPath` | Directory containing acronym files. Use an absolute path. | `"examples"` |
+| `folderPath` | Directory containing acronym files. Use an absolute path. Use \\\\ | `"examples"` |
 | `extensions` | Supported file extensions list | `["txt", "csv", "md"]` |
 | `separator` | Character separating acronym from definition | `";"` |
 | `muteNotifications` | Whether notifications should be silent | `true` |
