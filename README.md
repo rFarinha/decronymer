@@ -161,6 +161,8 @@ npm start
 
 ## 🐛 Issues
 
+Check Troubleshoot guide first - [Troubleshoot Wiki](https://github.com/rFarinha/decronymer/wiki/Troubleshoot)
+
 Found a bug or have a feature request? Please [open an issue](https://github.com/rFarinha/Decronymer/issues/new) with:
 
 - Clear description of the problem/request
