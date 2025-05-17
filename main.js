@@ -173,7 +173,6 @@ function getFolderPath(){
 }
 
 function updateAcronymDatabase() {
-
   activeFiles = settings.activeFiles;
 
   // Clear map to remove unselected files
@@ -189,11 +188,26 @@ function updateAcronymDatabase() {
     lines = lines.concat(fileLines);
   });
   
-  // Populate the Map
+  // Populate the Map with arrays of definitions
   lines.forEach(line => {
+    if (!line.trim()) return; // Skip empty lines
+    
     const [acronym, ...definitionParts] = line.split(settings.separator).map(item => item.trim());
+    if (!acronym) return; // Skip if no acronym
+    
     const definition = definitionParts.join(settings.separator);
-    acronymMap.set(acronym, definition);
+    
+    // If this acronym already exists in the map, add to its definitions array
+    if (acronymMap.has(acronym)) {
+      const definitions = acronymMap.get(acronym);
+      // Only add if this definition isn't already in the array
+      if (!definitions.includes(definition)) {
+        definitions.push(definition);
+      }
+    } else {
+      // First occurrence of this acronym
+      acronymMap.set(acronym, [definition]);
+    }
   });
 }
 
@@ -468,14 +482,18 @@ function handleClipboardTextValidation(clipboardText){
     return
   }
 
-  currentClipTxt = clipboardText
-  debugLog(currentClipTxt)
-  const acronymDefinition = getDefinition(currentClipTxt)
-  if(acronymDefinition){
-    showNotification(clipboardText, acronymDefinition)
-    lastNotifiedAcronym = clipboardText
-
-    // Reset after 5 seconds (adjust time as needed)
+  currentClipTxt = clipboardText;
+  debugLog(currentClipTxt);
+  const acronymDefinitions = getDefinition(currentClipTxt);
+  
+  if (acronymDefinitions && acronymDefinitions.length > 0) {
+    // Show a notification for each definition
+    acronymDefinitions.forEach(definition => {
+      showNotification(clipboardText, definition);
+    });
+    
+    lastNotifiedAcronym = clipboardText;
+    // Reset after 5 seconds
     setTimeout(resetLastNotifiedAcronym, 5000);
   }
 }
@@ -514,9 +532,9 @@ function showNotification(notificationTitle, notificationBody) {
 // @returns {string} - The definition of the acronym
 // If not found, returns an empty string
 function getDefinition(acronym) {
-  const acronymDefinition = acronymMap.get(acronym)
-  debugLog(acronymDefinition)
-  return acronymDefinition
+  const acronymDefinitions = acronymMap.get(acronym);
+  debugLog(acronymDefinitions);
+  return acronymDefinitions;
 }
 
 // CLEAN last used acronym

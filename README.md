@@ -33,7 +33,8 @@ https://github.com/user-attachments/assets/2036b604-1f2e-4eb3-99da-af6507887a98
 2. Decronymer automatically detects if the text matches any acronym in your lists
 3. If a match is found, a system notification appears with the meaning
 4. The notification disappears after the configured duration
-⚠️ Copying twice the same acronym will not pop up the notification, just copy something random and try again
+
+>⚠️ Copying twice the same acronym will not pop up the notification, just copy something random and try again
 
 ### Adding an acronym
 1. Add an acronym to the acronym file

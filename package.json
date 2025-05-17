@@ -1,6 +1,6 @@
 {
   "name": "Decronymer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A lightweight desktop tray application that automatically detects acronyms from your clipboard and displays their meanings via system notifications.",
   "main": "main.js",
   "scripts": {
@@ -28,6 +28,7 @@
     "electron": "^26.2.1"
   },
   "dependencies": {
+    "electron-forge": "^5.2.4",
     "electron-squirrel-startup": "^1.0.1"
   }
 }
