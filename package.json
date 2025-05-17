@@ -28,7 +28,7 @@
     "electron": "^26.2.1"
   },
   "dependencies": {
-    "electron-forge": "^5.2.4",
+    "electron-forge": "^0.0.2",
     "electron-squirrel-startup": "^1.0.1"
   }
 }
